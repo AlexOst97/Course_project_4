@@ -1,0 +1,17 @@
+{% extends 'mailing/mailing_base.html' %}
+{% block content %}
+
+  <section class="py-5 text-center container">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light">Действительно ли Вы хотите удалить получателя {{ recipient.full_name }} ?</h1>
+          <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Удалить</button>
+              <a class="btn btn-primary" href="{% url 'mailing:recipient_list' %}" role="button">Отменить</a>
+          </form>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
