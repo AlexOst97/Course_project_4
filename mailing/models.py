@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 
 class Recipient(models.Model):
@@ -7,6 +8,7 @@ class Recipient(models.Model):
     email = models.EmailField(unique=True, verbose_name='Email')
     full_name = models.CharField(max_length=200, verbose_name='ФИО')
     comment = models.TextField(blank=True, null=True, verbose_name='Комментарий')
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_recipient", verbose_name="Владелец")
 
     class Meta:
         verbose_name = 'Получатель'
@@ -14,7 +16,7 @@ class Recipient(models.Model):
         ordering = ['email', 'full_name',]
 
     def __str__(self):
-        return f'{self.email}'
+        return f'{self.full_name} - {self.email}'
 
 
 class Message(models.Model):
@@ -33,7 +35,7 @@ class Message(models.Model):
 
 
 class Mailing(models.Model):
-    'Класс, рассылка'
+    '''Класс, рассылка'''
 
     start_dispatch = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время первой отправки')
     end_dispatch = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время окончания отправки')
@@ -43,14 +45,16 @@ class Mailing(models.Model):
     Completed = 'Завершена'
 
     STATUS_CHOICES = [
-        ('Created', 'Создана'),
-        ('Launched', 'Запущена'),
-        ('Completed', 'Завершена'),
+        (Created, 'Создана'),
+        (Launched, 'Запущена'),
+        (Completed, 'Завершена'),
         ]
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Created', verbose_name='Статус рассылки')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='Сообщение')
     recipient = models.ManyToManyField(Recipient, verbose_name='Получатель')
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_mailing", verbose_name="Владелец")
+
 
     class Meta:
         verbose_name = 'Рассылка'
@@ -70,8 +74,8 @@ class MailingAttempt(models.Model):
     Not_successfully = 'Не успешно'
 
     STATUS_CHOICES = [
-        ('Successfully', 'Успешно'),
-        ('Not_successfully', 'Не успешно'),
+        (Successfully, 'Успешно'),
+        (Not_successfully, 'Не успешно'),
     ]
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, verbose_name='Статус рассылки')
