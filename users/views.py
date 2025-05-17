@@ -1,9 +1,9 @@
 import secrets
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView
-from users.forms import CustomUserCreationForm
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
+from users.forms import CustomUserCreationForm, UserUpdateForm, ManagerUserForm
 from django.core.mail import send_mail
 from config.settings import EMAIL_HOST_USER
 from django.shortcuts import get_object_or_404, redirect
@@ -11,9 +11,9 @@ from users.models import User
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 
 
-class RegisterView(CreateView):
-    template_name = 'register.html'
+class RegisterCreateView(CreateView):
     form_class = CustomUserCreationForm
+    template_name = 'register.html'
     success_url = reverse_lazy('users:login')
 
     def form_valid(self, form):
@@ -39,6 +39,47 @@ class RegisterView(CreateView):
         user.is_active = True
         user.save()
         return redirect(reverse("users:login"))
+
+
+class UserUpdateView(UpdateView, LoginRequiredMixin):
+    model = User
+    form_class = UserUpdateForm
+    template_name = 'user_update.html'
+    success_url = reverse_lazy('mailing:home')
+
+    def get_change(self):
+        return User.objects.filter(pk=self.request.user.pk)
+
+    def get_form_class(self):
+        user = self.request.user
+        if user == user.has_perm("users.сan_block_users"):
+            return ManagerUserForm
+        return UserUpdateForm
+
+
+class UserDeleteView(DeleteView, LoginRequiredMixin):
+    model = User
+    form_class = UserUpdateForm
+    template_name = 'user_delete.html'
+    success_url = reverse_lazy('mailing:home')
+
+    def get_change(self):
+        return User.objects.filter(pk=self.request.user.pk)
+
+
+class UserListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = 'user_list.html'
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        return User.objects.filter(is_active = True)
+
+
+class UserDetailView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'user_detail.html'
+    context_object_name = 'user'
 
 
 class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):

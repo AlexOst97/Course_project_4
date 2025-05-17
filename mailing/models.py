@@ -54,12 +54,13 @@ class Mailing(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='Сообщение')
     recipient = models.ManyToManyField(Recipient, verbose_name='Получатель')
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_mailing", verbose_name="Владелец")
-
+    is_active = models.BooleanField(default=True, verbose_name='Признак публикации')
 
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
         ordering = ['start_dispatch', 'end_dispatch', 'status',]
+        permissions = [('can_disable_mailing', 'Может отключать рассылки'), ]
 
     def __str__(self):
         return f'{self.id}'

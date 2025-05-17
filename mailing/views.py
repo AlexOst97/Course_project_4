@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
-from .models import Recipient, Message, Mailing
+from .models import Recipient, Message, Mailing, MailingAttempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
-from .forms import RecipientForm, MessageForm, MailingForm
+from .forms import RecipientForm, MessageForm, MailingForm, ManagerMailingForm, MailingAttemptForm
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
@@ -15,6 +15,13 @@ class RecipientCreateView(LoginRequiredMixin, CreateView):
     template_name = 'recipient_create.html'
     success_url = reverse_lazy('mailing:recipient_list')
 
+    def form_valid(self, form):
+        recipient = form.save()
+        user = self.request.user
+        recipient.owner = user
+        recipient.save()
+        return super().form_valid(form)
+
 
 class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     model = Recipient
@@ -23,8 +30,8 @@ class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('mailing:recipient_list')
 
     def get_change(self, request, *args, **kwargs):
-        product = super().get_object()
-        if product.owner == self.request.user:
+        recipient = super().get_object()
+        if recipient.owner == self.request.user:
             return super().dispatch(request, *args, **kwargs)
         return HttpResponseForbidden("Вы не можете изменять этого получателя")
 
@@ -35,8 +42,8 @@ class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('mailing:recipient_list')
 
     def get_change(self, request, *args, **kwargs):
-        product = super().get_object()
-        if product.owner == self.request.user:
+        recipient = super().get_object()
+        if recipient.owner == self.request.user:
             return super().dispatch(request, *args, **kwargs)
         return HttpResponseForbidden("Вы не можете удалять этого получателя")
 
@@ -60,6 +67,13 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     form_class  = MessageForm
     template_name = 'message_create.html'
     success_url = reverse_lazy('mailing:message_list')
+
+    def form_valid(self, form):
+        message = form.save()
+        user = self.request.user
+        message.owner = user
+        message.save()
+        return super().form_valid(form)
 
 
 class MessageUpdateView(LoginRequiredMixin, UpdateView):
@@ -95,6 +109,13 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     template_name = 'mailing_create.html'
     success_url = reverse_lazy('mailing:mailing_list')
 
+    def form_valid(self, form):
+        mailing = form.save()
+        user = self.request.user
+        mailing.owner = user
+        mailing.save()
+        return super().form_valid(form)
+
 
 class MailingUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailing
@@ -103,10 +124,16 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('mailing:mailing_list')
 
     def get_change(self, request, *args, **kwargs):
-        product = super().get_object()
-        if product.owner == self.request.user:
+        mailing = super().get_object()
+        if mailing.owner == self.request.user:
             return super().dispatch(request, *args, **kwargs)
         return HttpResponseForbidden("Вы не можете изменять эту рассылку")
+
+    def get_form_class(self):
+        user = self.request.user
+        if user == user.has_perm("mailing.can_disable_mailing"):
+            return ManagerMailingForm
+        return MailingForm
 
 
 class MailingDeleteView(LoginRequiredMixin, DeleteView):
@@ -115,8 +142,8 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('mailing:mailing_list')
 
     def get_change(self, request, *args, **kwargs):
-        product = super().get_object()
-        if product.owner == self.request.user:
+        mailing = super().get_object()
+        if mailing.owner == self.request.user:
             return super().dispatch(request, *args, **kwargs)
         return HttpResponseForbidden("Вы не можете удалить эту рассылку")
 
@@ -126,6 +153,9 @@ class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = 'mailing_list.html'
     context_object_name = 'mailings'
+
+    def get_queryset(self):
+        return Mailing.objects.filter(is_active = True)
 
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
@@ -144,3 +174,17 @@ class MailingTemplateView(LoginRequiredMixin, TemplateView):
         context["all_active_mailing"] = len(Mailing.objects.filter(status="Запущена"))
         context["all_recipient"] = len(Recipient.objects.all())
         return context
+
+
+# MailingAttempt
+class MailingAttemptCreateView(LoginRequiredMixin, CreateView):
+    model = MailingAttempt
+    form_class  = MailingAttemptForm
+    template_name = 'attempt_create.html'
+    success_url = reverse_lazy('mailing:attempt_list')
+
+
+class MailingAttemptListView(LoginRequiredMixin, ListView):
+    model = MailingAttempt
+    template_name = 'attempt_list.html'
+    context_object_name = 'attempts'

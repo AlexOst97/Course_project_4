@@ -16,9 +16,11 @@
         <ul class="navbar-nav flex-grow-1 justify-content-between">
         <li class="nav-item"><a class="nav-link" href="{% url 'mailing:home' %}">Главная</a></li>
         {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'users:user_list' %}">Пользователи</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'mailing:recipient_list' %}">Получатели</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'mailing:message_list' %}">Сообщения</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'mailing:mailing_list' %}">Рассылки</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'mailing:attempt_list' %}">Попытка рассылки</a></li>
          <li class="nav-item">
               <form method="post" action="{% url 'users:logout' %}">
                   {% csrf_token %}
