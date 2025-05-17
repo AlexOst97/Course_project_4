@@ -6,17 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing', '0006_mailing_owner'),
+        ("mailing", "0006_mailing_owner"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='mailing',
-            options={'ordering': ['start_dispatch', 'end_dispatch', 'status'], 'permissions': [('can_disable_mailing', 'Может отключать рассылки')], 'verbose_name': 'Рассылка', 'verbose_name_plural': 'Рассылки'},
+            name="mailing",
+            options={
+                "ordering": ["start_dispatch", "end_dispatch", "status"],
+                "permissions": [("can_disable_mailing", "Может отключать рассылки")],
+                "verbose_name": "Рассылка",
+                "verbose_name_plural": "Рассылки",
+            },
         ),
         migrations.AddField(
-            model_name='mailing',
-            name='is_active',
-            field=models.BooleanField(default=True, verbose_name='Признак публикации'),
+            model_name="mailing",
+            name="is_active",
+            field=models.BooleanField(default=True, verbose_name="Признак публикации"),
         ),
     ]

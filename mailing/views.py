@@ -1,9 +1,22 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
 from .models import Recipient, Message, Mailing, MailingAttempt
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    TemplateView,
+)
 from django.urls import reverse_lazy
-from .forms import RecipientForm, MessageForm, MailingForm, ManagerMailingForm, MailingAttemptForm
+from .forms import (
+    RecipientForm,
+    MessageForm,
+    MailingForm,
+    ManagerMailingForm,
+    MailingAttemptForm,
+)
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
@@ -11,9 +24,9 @@ from django.utils.decorators import method_decorator
 # МОДЕЛЬ Recipient
 class RecipientCreateView(LoginRequiredMixin, CreateView):
     model = Recipient
-    form_class  = RecipientForm
-    template_name = 'recipient_create.html'
-    success_url = reverse_lazy('mailing:recipient_list')
+    form_class = RecipientForm
+    template_name = "recipient_create.html"
+    success_url = reverse_lazy("mailing:recipient_list")
 
     def form_valid(self, form):
         recipient = form.save()
@@ -25,9 +38,9 @@ class RecipientCreateView(LoginRequiredMixin, CreateView):
 
 class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     model = Recipient
-    form_class  = RecipientForm
-    template_name = 'recipient_update.html'
-    success_url = reverse_lazy('mailing:recipient_list')
+    form_class = RecipientForm
+    template_name = "recipient_update.html"
+    success_url = reverse_lazy("mailing:recipient_list")
 
     def get_change(self, request, *args, **kwargs):
         recipient = super().get_object()
@@ -38,8 +51,8 @@ class RecipientUpdateView(LoginRequiredMixin, UpdateView):
 
 class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     model = Recipient
-    template_name = 'recipient_delete.html'
-    success_url = reverse_lazy('mailing:recipient_list')
+    template_name = "recipient_delete.html"
+    success_url = reverse_lazy("mailing:recipient_list")
 
     def get_change(self, request, *args, **kwargs):
         recipient = super().get_object()
@@ -48,25 +61,25 @@ class RecipientDeleteView(LoginRequiredMixin, DeleteView):
         return HttpResponseForbidden("Вы не можете удалять этого получателя")
 
 
-@method_decorator(cache_page(60 * 15), name='dispatch')
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class RecipientListView(LoginRequiredMixin, ListView):
     model = Recipient
-    template_name = 'recipient_list.html'
-    context_object_name = 'recipients'
+    template_name = "recipient_list.html"
+    context_object_name = "recipients"
 
 
 class RecipientDetailView(LoginRequiredMixin, DetailView):
     model = Recipient
-    template_name = 'recipient_detail.html'
-    context_object_name = 'recipient'
+    template_name = "recipient_detail.html"
+    context_object_name = "recipient"
 
 
 # МОДЕЛЬ Message
 class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
-    form_class  = MessageForm
-    template_name = 'message_create.html'
-    success_url = reverse_lazy('mailing:message_list')
+    form_class = MessageForm
+    template_name = "message_create.html"
+    success_url = reverse_lazy("mailing:message_list")
 
     def form_valid(self, form):
         message = form.save()
@@ -78,36 +91,36 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
 
 class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
-    form_class  = MessageForm
-    template_name = 'message_update.html'
-    success_url = reverse_lazy('mailing:message_list')
+    form_class = MessageForm
+    template_name = "message_update.html"
+    success_url = reverse_lazy("mailing:message_list")
 
 
 class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
-    template_name = 'message_delete.html'
-    success_url = reverse_lazy('mailing:message_list')
+    template_name = "message_delete.html"
+    success_url = reverse_lazy("mailing:message_list")
 
 
-@method_decorator(cache_page(60 * 15), name='dispatch')
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class MessageListView(LoginRequiredMixin, ListView):
     model = Message
-    template_name = 'message_list.html'
-    context_object_name = 'messages'
+    template_name = "message_list.html"
+    context_object_name = "messages"
 
 
 class MessageDetailView(LoginRequiredMixin, DetailView):
     model = Message
-    template_name = 'message_detail.html'
-    context_object_name = 'message'
+    template_name = "message_detail.html"
+    context_object_name = "message"
 
 
 # МОДЕЛЬ Mailing
 class MailingCreateView(LoginRequiredMixin, CreateView):
     model = Mailing
-    form_class  = MailingForm
-    template_name = 'mailing_create.html'
-    success_url = reverse_lazy('mailing:mailing_list')
+    form_class = MailingForm
+    template_name = "mailing_create.html"
+    success_url = reverse_lazy("mailing:mailing_list")
 
     def form_valid(self, form):
         mailing = form.save()
@@ -119,9 +132,9 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
 
 class MailingUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailing
-    form_class  = MailingForm
-    template_name = 'mailing_update.html'
-    success_url = reverse_lazy('mailing:mailing_list')
+    form_class = MailingForm
+    template_name = "mailing_update.html"
+    success_url = reverse_lazy("mailing:mailing_list")
 
     def get_change(self, request, *args, **kwargs):
         mailing = super().get_object()
@@ -138,8 +151,8 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
 
 class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
-    template_name = 'mailing_delete.html'
-    success_url = reverse_lazy('mailing:mailing_list')
+    template_name = "mailing_delete.html"
+    success_url = reverse_lazy("mailing:mailing_list")
 
     def get_change(self, request, *args, **kwargs):
         mailing = super().get_object()
@@ -148,25 +161,25 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
         return HttpResponseForbidden("Вы не можете удалить эту рассылку")
 
 
-@method_decorator(cache_page(60 * 15), name='dispatch')
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
-    template_name = 'mailing_list.html'
-    context_object_name = 'mailings'
+    template_name = "mailing_list.html"
+    context_object_name = "mailings"
 
     def get_queryset(self):
-        return Mailing.objects.filter(is_active = True)
+        return Mailing.objects.filter(is_active=True)
 
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
     model = Mailing
-    template_name = 'mailing_detail.html'
-    context_object_name = 'mailing'
+    template_name = "mailing_detail.html"
+    context_object_name = "mailing"
 
 
-@method_decorator(cache_page(60 * 15), name='dispatch')
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class MailingTemplateView(LoginRequiredMixin, TemplateView):
-    template_name = 'home.html'
+    template_name = "home.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -179,12 +192,12 @@ class MailingTemplateView(LoginRequiredMixin, TemplateView):
 # MailingAttempt
 class MailingAttemptCreateView(LoginRequiredMixin, CreateView):
     model = MailingAttempt
-    form_class  = MailingAttemptForm
-    template_name = 'attempt_create.html'
-    success_url = reverse_lazy('mailing:attempt_list')
+    form_class = MailingAttemptForm
+    template_name = "attempt_create.html"
+    success_url = reverse_lazy("mailing:attempt_list")
 
 
 class MailingAttemptListView(LoginRequiredMixin, ListView):
     model = MailingAttempt
-    template_name = 'attempt_list.html'
-    context_object_name = 'attempts'
+    template_name = "attempt_list.html"
+    context_object_name = "attempts"

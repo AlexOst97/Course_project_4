@@ -6,17 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0003_remove_user_username'),
+        ("users", "0003_remove_user_username"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
-            options={'permissions': [('сan_block_users', 'Может блокировать пользователей')], 'verbose_name': 'Пользователь', 'verbose_name_plural': 'Пользователи'},
+            name="user",
+            options={
+                "permissions": [("сan_block_users", "Может блокировать пользователей")],
+                "verbose_name": "Пользователь",
+                "verbose_name_plural": "Пользователи",
+            },
         ),
         migrations.AlterField(
-            model_name='user',
-            name='is_active',
-            field=models.BooleanField(default=True, verbose_name='Активный пользователь'),
+            model_name="user",
+            name="is_active",
+            field=models.BooleanField(
+                default=True, verbose_name="Активный пользователь"
+            ),
         ),
     ]

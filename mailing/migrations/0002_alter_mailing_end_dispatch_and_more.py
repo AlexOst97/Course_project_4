@@ -6,23 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing', '0001_initial'),
+        ("mailing", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mailing',
-            name='end_dispatch',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='Дата и время окончания отправки'),
+            model_name="mailing",
+            name="end_dispatch",
+            field=models.DateTimeField(
+                auto_now_add=True, verbose_name="Дата и время окончания отправки"
+            ),
         ),
         migrations.AlterField(
-            model_name='mailing',
-            name='start_dispatch',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='Дата и время первой отправки'),
+            model_name="mailing",
+            name="start_dispatch",
+            field=models.DateTimeField(
+                auto_now_add=True, verbose_name="Дата и время первой отправки"
+            ),
         ),
         migrations.AlterField(
-            model_name='mailingattempt',
-            name='start_attempt',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='Дата и время попытки'),
+            model_name="mailingattempt",
+            name="start_attempt",
+            field=models.DateTimeField(
+                auto_now_add=True, verbose_name="Дата и время попытки"
+            ),
         ),
     ]

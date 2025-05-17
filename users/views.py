@@ -2,7 +2,13 @@ import secrets
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
+from django.views.generic import (
+    CreateView,
+    UpdateView,
+    DeleteView,
+    ListView,
+    DetailView,
+)
 from users.forms import CustomUserCreationForm, UserUpdateForm, ManagerUserForm
 from django.core.mail import send_mail
 from config.settings import EMAIL_HOST_USER
@@ -13,11 +19,11 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 
 class RegisterCreateView(CreateView):
     form_class = CustomUserCreationForm
-    template_name = 'register.html'
-    success_url = reverse_lazy('users:login')
+    template_name = "register.html"
+    success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
-        '''Переход на страницу пользователя после подтверждение почты'''
+        """Переход на страницу пользователя после подтверждение почты"""
         user = form.save()
         user.is_active = False
         token = secrets.token_hex(16)
@@ -34,7 +40,7 @@ class RegisterCreateView(CreateView):
         return super().form_valid(form)
 
     def email_verification(request, token):
-        '''Сохранение пользователя'''
+        """Сохранение пользователя"""
         user = get_object_or_404(User, token=token)
         user.is_active = True
         user.save()
@@ -44,8 +50,8 @@ class RegisterCreateView(CreateView):
 class UserUpdateView(UpdateView, LoginRequiredMixin):
     model = User
     form_class = UserUpdateForm
-    template_name = 'user_update.html'
-    success_url = reverse_lazy('mailing:home')
+    template_name = "user_update.html"
+    success_url = reverse_lazy("mailing:home")
 
     def get_change(self):
         return User.objects.filter(pk=self.request.user.pk)
@@ -60,8 +66,8 @@ class UserUpdateView(UpdateView, LoginRequiredMixin):
 class UserDeleteView(DeleteView, LoginRequiredMixin):
     model = User
     form_class = UserUpdateForm
-    template_name = 'user_delete.html'
-    success_url = reverse_lazy('mailing:home')
+    template_name = "user_delete.html"
+    success_url = reverse_lazy("mailing:home")
 
     def get_change(self):
         return User.objects.filter(pk=self.request.user.pk)
@@ -69,21 +75,21 @@ class UserDeleteView(DeleteView, LoginRequiredMixin):
 
 class UserListView(LoginRequiredMixin, ListView):
     model = User
-    template_name = 'user_list.html'
-    context_object_name = 'users'
+    template_name = "user_list.html"
+    context_object_name = "users"
 
     def get_queryset(self):
-        return User.objects.filter(is_active = True)
+        return User.objects.filter(is_active=True)
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
     model = User
-    template_name = 'user_detail.html'
-    context_object_name = 'user'
+    template_name = "user_detail.html"
+    context_object_name = "user"
 
 
 class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
-    '''Сброс пароля через почту'''
+    """Сброс пароля через почту"""
 
     form_class = CustomUserCreationForm
     template_name = "password_reset.html.html"
@@ -101,7 +107,7 @@ class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
 
 
 class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
-    '''Установка нового пароля'''
+    """Установка нового пароля"""
 
     form_class = CustomUserCreationForm
     template_name = "password_new.html.html"
